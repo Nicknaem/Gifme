@@ -24,8 +24,26 @@ header > * {
 nav{
     display: flex;
 }
+.container{
+    width: 1200px;
+    margin: auto;
+}
+#gifs-section{
+    display: flex;
+    flex-wrap: wrap;
+}
+#gifs-section img{
+    height: 200px;
+}
+
 .search-bar{
     display: flex;
+}
+@media (max-width: 1300px){
+    .container{
+        width: 80%;
+        overflow: hidden;
+    }
 }
 </style>
 <body>
@@ -42,8 +60,12 @@ nav{
             <button id="trending">See what's trending</button>
         </div>
     </header>
-    <main id="gifs-section" class=".container">
+    <main id="gifs-section" class="container">
         <!-- rendered gifs go here -->
+        <!-- <div>
+            <img src="" alt="">
+            <div>Rating</div>
+        </div> -->
     </main>
 </body>
 <script>
@@ -96,8 +118,26 @@ nav{
             this.navTags.push(newTag);
             this.loadTags();
         }
+        createGifBox(gifLink){
+            let gifBox = document.createElement('div');
+            gifBox.className = "gif-box";
+
+            let img = document.createElement('img')
+            img.setAttribute('src',gifLink);
+
+            let gifBar = document.createElement('div')
+            gifBar.innerText = 'Rating';
+
+            gifBox.appendChild(img);
+            gifBox.appendChild(gifBar);
+            return gifBox
+        }
         renderGifs(gifList){
             console.log(gifList);
+            let gifSection = document.getElementById('gifs-section')
+            gifList.forEach((item)=>{
+                gifSection.appendChild(this.createGifBox(item.images.downsized.url));
+            })
             //create gif element from given json object
             //append them to container
         }
@@ -113,9 +153,12 @@ nav{
     })
     document.getElementById('submit').addEventListener('click', (event)=>{
         let inputValue = event.target.parentElement.firstElementChild.value
-        gallery.pullData(inputValue)
+        gallery.pullData(inputValue).then((result)=>{
+            gallery.renderGifs(result.data);
+        })
         gallery.updateTags(inputValue);
         inputValue = '';
+        
     })
     // on navTags click
     //   wipe out Gallery container 

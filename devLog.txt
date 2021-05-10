@@ -3,4 +3,5 @@
 2. minimize code duplication
 3. make generalized useful functions
 
-unacceptable reason
+emoting aviability
+emoted list 
