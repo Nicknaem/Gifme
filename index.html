@@ -33,30 +33,28 @@ nav{
         <h1 class="title">Giphy API Example</h1>
         <nav class="nav-tags">
             <!-- contains always 6 elements -->
-            <button>something</button>
         </nav>
         <div class="search-bar">
-            <form action="">
+            <!-- <form action=""> -->
                 <input type="text" name="" id="">
-                <input type="submit" value="Submit">
-            </form>
-            <button>See what's trending</button>
+                <input id="submit" type="submit" value="Submit">
+            <!-- </form> -->
+            <button id="trending">See what's trending</button>
         </div>
     </header>
-    <main class=".container">
+    <main id="gifs-section" class=".container">
         <!-- rendered gifs go here -->
     </main>
 </body>
 <script>
     class Config{
-        constructor(gifList){
+        constructor(){
             this.apiKey = "aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB"
             this.amount = 20;
-            this.InputData = list;
             this.navTags = ['Internet Cats', 'Meme\'s', 'Typing', 'Space', 'Rick and Morty' ]
             this.apiURL = 'https://api.giphy.com/v1/gifs/';
             this.apiTrending = 'https://api.giphy.com/v1/gifs/trending?limit=10&api_key=aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB&fmt=json'
-            this.InputData = gifList;
+            // this.InputData = gifList;
         }
     }
 
@@ -68,8 +66,10 @@ nav{
         async pullData(tabName){
             let response
             if(tabName === "See what's trending"){
-                response = await fetch(`${this.apiURL}trending?${this.amount}\&&api_key=${this.apiKey}`);
+                console.log('pulling trending gifs')
+                response = await fetch(`${this.apiURL}trending?limit=${this.amount}\&api_key=${this.apiKey}`);
             }else{
+                console.log("pulling queried gifs");
                 response = await fetch(`${this.apiURL}search?q=${tabName}\&limit=${this.amount}&api_key=${this.apiKey}`);
             }
             return response.json();
@@ -77,23 +77,24 @@ nav{
 
         loadTags(){
             let navContainer = document.querySelector('.nav-tags')
+            navContainer.innerHTML = '';
             this.navTags.forEach((item)=>{
                 let tagNode = document.createElement('button');
                 tagNode.innerText = item;
                 tagNode.addEventListener('click', (event)=>{
-                    document.getElementById('gifs-container').innerHTML = '';
+                    document.getElementById('gifs-section').innerHTML = '';
 
-                    pullData(event.target.innerText).then((result)=>{
-                        this.renderGifs(result);
+                    this.pullData(event.target.innerText).then((result)=>{
+                        this.renderGifs(result.data);
                     })
                 })
                 navContainer.appendChild(tagNode)
             })
         }
-        updateTag(newTag){
+        updateTags(newTag){
             this.navTags.shift();
             this.navTags.push(newTag);
-            loadTags();
+            this.loadTags();
         }
         renderGifs(gifList){
             console.log(gifList);
@@ -102,7 +103,20 @@ nav{
         }
     }
 
+    var gallery = new Gallery();
+    gallery.loadTags();
     
+    document.getElementById('trending').addEventListener('click' , (event)=>{
+        gallery.pullData(event.target.innerText).then((result)=>{
+            gallery.renderGifs(result.data);
+        });
+    })
+    document.getElementById('submit').addEventListener('click', (event)=>{
+        let inputValue = event.target.parentElement.firstElementChild.value
+        gallery.pullData(inputValue)
+        gallery.updateTags(inputValue);
+        inputValue = '';
+    })
     // on navTags click
     //   wipe out Gallery container 
     //   generate queryURL based on target.innerText and Config paremeters
