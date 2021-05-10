@@ -6,24 +6,75 @@
     <title>Document</title>
 </head>
 <style>
-    
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+header > * {
+    margin:10px 0px;
+}
+nav{
+    display: flex;
+}
+.search-bar{
+    display: flex;
+}
 </style>
 <body>
     <header>
-        <h1 class="title"></h1>
-        <nav>
+        <h1 class="title">Giphy API Example</h1>
+        <nav class="nav-tags">
             <!-- contains always 6 elements -->
+            <button>something</button>
         </nav>
         <div class="search-bar">
             <form action="">
                 <input type="text" name="" id="">
                 <input type="submit" value="Submit">
             </form>
-            <div>See what's trending</div>
+            <button>See what's trending</button>
         </div>
     </header>
     <main class=".container">
         <!-- rendered gifs go here -->
     </main>
 </body>
+<script>
+    class Config{
+        constructor(gifList){
+            this.key = "aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB"
+            this.amount = 20;
+            this.InputData = list;
+            this.navTags = ['Internet Cats', 'Meme\'s', 'Typing', 'Space', 'Rick and Morty' ]
+            this.apiQuery = 'https://api.giphy.com/v1/gifs/search?';
+            this.InputData = gifList;
+        }
+    }
+    class Gallery extends Config {
+        appendNode(node,targetNode){
+            targetNode.appendChild(node);
+        }
+        render(){
+
+        }
+    }
+
+    // on navTags click
+    //   wipe out Gallery container 
+    //   generate queryURL based on target.innerText and Config paremeters
+    //   then fetch get all the data as array of objects
+    //   and render them
+
+    //on submit
+    //  goes same, we just unshift first value in navTags array and push new one there
+
+</script>
 </html>
