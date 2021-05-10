@@ -2,3 +2,5 @@
 1. think about refined class structure
 2. minimize code duplication
 3. make generalized useful functions
+
+unacceptable reason
