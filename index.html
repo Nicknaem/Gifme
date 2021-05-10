@@ -50,20 +50,55 @@ nav{
 <script>
     class Config{
         constructor(gifList){
-            this.key = "aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB"
+            this.apiKey = "aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB"
             this.amount = 20;
             this.InputData = list;
             this.navTags = ['Internet Cats', 'Meme\'s', 'Typing', 'Space', 'Rick and Morty' ]
-            this.apiQuery = 'https://api.giphy.com/v1/gifs/search?';
+            this.apiURL = 'https://api.giphy.com/v1/gifs/';
+            this.apiTrending = 'https://api.giphy.com/v1/gifs/trending?limit=10&api_key=aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB&fmt=json'
             this.InputData = gifList;
         }
     }
-    class Gallery extends Config {
-        appendNode(node,targetNode){
-            targetNode.appendChild(node);
-        }
-        render(){
 
+    class Gallery extends Config {
+        // appendNode(node,targetNode){
+        //     targetNode.appendChild(node);
+        // }
+
+        async pullData(tabName){
+            let response
+            if(tabName === "See what's trending"){
+                response = await fetch(`${this.apiURL}trending?${this.amount}\&&api_key=${this.apiKey}`);
+            }else{
+                response = await fetch(`${this.apiURL}search?q=${tabName}\&limit=${this.amount}&api_key=${this.apiKey}`);
+            }
+            return response.json();
+        }
+
+        loadTags(){
+            let navContainer = document.querySelector('.nav-tags')
+            this.navTags.forEach((item)=>{
+                let tagNode = document.createElement('button');
+                tagNode.innerText = item;
+                tagNode.addEventListener('click', (event)=>{
+                    document.getElementById('gifs-container').innerHTML = '';
+
+                    pullData(event.target.innerText).then((result)=>{
+                        this.renderGifs(result);
+                    })
+                })
+                navContainer.appendChild(tagNode)
+            })
+        }
+        updateTag(newTag){
+            this.navTags.shift();
+            this.navTags.push(newTag);
+            loadTags();
+        }
+        renderGifs(gifList){
+            console.log(gifList);
+            //create gif element from given json object
+            //append them to container
         }
     }
 
