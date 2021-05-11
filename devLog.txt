@@ -3,5 +3,10 @@
 2. minimize code duplication
 3. make generalized useful functions
 
-emoting aviability
-emoted list 
+emoting function DONE!
+emoted list      DONE
+
+getelementbyID duplication
+eventlisteners duplication
+
+construct html structure with template literals

@@ -64,12 +64,10 @@ nav{
             <!-- contains always 6 elements -->
         </nav>
         <div class="search-bar">
-            <!-- <form action=""> -->
                 <input type="text" name="" id="">
                 <input id="submit" type="submit" value="Submit">
-            <!-- </form> -->
             <button id="trending">See what's trending</button>
-            <button id="saved">Saved</button>
+            <button id="emoted">Emoted</button>
         </div>
     </header>
     <main id="gifs-section" class="container">
@@ -91,6 +89,7 @@ nav{
             // this.savedAPI = '192.168.100.7:555/saveAPI/'
             this.apiTrending = 'https://api.giphy.com/v1/gifs/trending?limit=10&api_key=aFFKTuSMjd6j0wwjpFCPXZipQbcnw3vB&fmt=json'
             // this.InputData = gifList;
+            this.emoted = {"data":{}}
         }
     }
 
@@ -100,29 +99,41 @@ nav{
         // }
 
         async pullData(tabName){
-            let response
+            let response;
+            let responseType;
             switch (tabName) {
                 case "See what's trending":
                     console.log('pulling trending gifs')
                     response = await fetch(`${this.gifAPI}trending?limit=${this.amount}\&api_key=${this.apiKey}`);
                     break;
-                case 'Saved':
+                case 'Emoted':
+                    console.log('pulling emoted data')
                     // response = await fetch(this.savedApi...)
-                    response = this.saved;
+                    response = this.emoted;
+                    responseType = 'emoted';
+                    break;
                 default:
                     console.log("pulling queried gifs");
                     response = await fetch(`${this.gifAPI}search?q=${tabName}\&limit=${this.amount}&api_key=${this.apiKey}`);
                     break;
             }
-            if(tabName === "See what's trending"){
-                console.log('pulling trending gifs')
-                response = await fetch(`${this.gifAPI}trending?limit=${this.amount}\&api_key=${this.apiKey}`);
-            }else{
-                console.log("pulling queried gifs");
-                response = await fetch(`${this.gifAPI}search?q=${tabName}\&limit=${this.amount}&api_key=${this.apiKey}`);
+            {
+            // if(tabName === "See what's trending"){
+            //     console.log('pulling trending gifs')
+            //     response = await fetch(`${this.gifAPI}trending?limit=${this.amount}\&api_key=${this.apiKey}`);
+            // }else{
+            //     console.log("pulling queried gifs");
+            //     response = await fetch(`${this.gifAPI}search?q=${tabName}\&limit=${this.amount}&api_key=${this.apiKey}`);
+            // }
             }
+           
             document.getElementById('gifs-section').innerHTML = '';
-            return response.json();
+            if(responseType === 'emoted'){
+                return response;
+            }else{
+                return response.json();
+            }
+
         }
 
         loadTags(){
@@ -146,7 +157,7 @@ nav{
             this.navTags.push(newTag);
             this.loadTags();
         }
-        createGifBox(gifLink){
+        createGifBox(gifLink, emoji){
             let gifBox = document.createElement('div');
             gifBox.className = "gif-box";
 
@@ -159,7 +170,7 @@ nav{
             gifRating.innerText = 'Rating';
 
             gifBar.appendChild(gifRating);
-            gifBar.appendChild(this.createEmotes());
+            gifBar.appendChild(this.createEmotes(emoji));
 
             gifBox.appendChild(imgGIF);
             gifBox.appendChild(gifBar);
@@ -167,30 +178,67 @@ nav{
         
             return gifBox
         }
-        createEmotes(){
+        
+        createEmotes(specificEmoji){
             let emotesWrapper = document.createElement('div');
             emotesWrapper.className = 'emotes-wrapper';
-
-            this.emotes.forEach((item)=>{
+            if(specificEmoji != undefined){
                 let emoji = document.createElement('img')
-                emoji.setAttribute('src',`./Assets/${item}.gif`);
-                emoji.addEventListener('click', (event)=>{
-                    console.log('saving gif');
-                    //fetch post should be done here, this time we save it locally 
-                    //save emoted gif url and emoji clicked data:[{url:emoji}] because url is unique to gif
-                    // this.emotedGifs.push({event.target})
-                })
+                emoji.setAttribute('src',`./Assets/${specificEmoji}.gif`);
                 emotesWrapper.appendChild(emoji);
-            })
+            }else{
+                this.emotes.forEach((item)=>{
+                    let emoji = document.createElement('img')
+                    emoji.setAttribute('src',`./Assets/${item}.gif`);
+                    emoji.addEventListener('click', (event)=>{
+                        //fetch post should be done here, this time we save it locally 
+                        //save emoted gif url and emoji clicked data:[{url:emoji}] because url is unique to gif
+                        // this.emotedGifs.push({event.target})
+                        console.log('saving gif');
+                        let emojiPath = event.target.src.split('/');
+                        let emoji = emojiPath[emojiPath.length-1].slice(0,-4);
+
+                        let gifLink = event.target.parentElement.parentElement.parentElement.firstElementChild.src //$$
+                        
+                        this.emoted.data[gifLink] = emoji;
+                        console.log(this.emoted);
+
+                    })
+                    emotesWrapper.appendChild(emoji);
+                })
+            }
 
             return emotesWrapper;
         }
-        renderGifs(gifList){
+        renderGifs(gifList,listType = 'normal'){
             console.log(gifList);
             let gifSection = document.getElementById('gifs-section')
-            gifList.forEach((item)=>{
-                gifSection.appendChild(this.createGifBox(item.images.downsized.url));
-            })
+            if(listType === 'emoted'){
+                console.log('rendering emoted gifs');
+                // console.log(gifList);   
+                {
+                /*
+                gifList.forEach((item)=>{
+                    // console.log(Object.keys(item));
+                    // console.log(item[0]);
+                    // const [key, value] = Object.entries(item);
+                    // let key = Object.entries(item)[0];
+                    // let value = Object.entries(item)[1];
+                    console.log(item);
+                    // gifSection.appendChild(this.createGifBox(key,value));
+                })
+                */
+                }
+                for (const [key, value] of Object.entries(gifList)) {
+                    console.log(key);
+                    console.log(value);
+                    gifSection.appendChild(this.createGifBox(key,value));
+                }
+            }else{
+                gifList.forEach((item)=>{
+                    gifSection.appendChild(this.createGifBox(item.images.downsized.url));
+                })
+            }
             //create gif element from given json object
             //append them to container
         }
@@ -204,9 +252,9 @@ nav{
             gallery.renderGifs(result.data);
         });
     })
-    document.getElementById('saved').addEventListener('click' , (event)=>{
+    document.getElementById('emoted').addEventListener('click' , (event)=>{
         gallery.pullData(event.target.innerText).then((result)=>{
-            gallery.renderGifs(result.data);
+            gallery.renderGifs(result.data,'emoted');
         });
     })
     document.getElementById('submit').addEventListener('click', (event)=>{
