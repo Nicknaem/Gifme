@@ -10,3 +10,5 @@ getelementbyID duplication
 eventlisteners duplication
 
 construct html structure with template literals
+
+//onEmojiClick save current gif url and emoji into this.emoted.data:{url:emoji} because url is unique to gif
