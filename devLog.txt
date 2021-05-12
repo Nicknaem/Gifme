@@ -12,3 +12,12 @@ eventlisteners duplication
 construct html structure with template literals
 
 //onEmojiClick save current gif url and emoji into this.emoted.data:{url:emoji} because url is unique to gif
+
+    // on navTags click
+    //   wipe out Gallery container 
+    //   generate queryURL based on target.innerText and Config paremeters
+    //   then fetch get all the data as array of objects
+    //   and render them
+
+    //on submit
+    //  goes same, we just unshift first value in navTags array and push new one there
